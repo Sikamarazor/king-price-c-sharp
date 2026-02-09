@@ -52,3 +52,46 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# =========================
+# ⚙️ VISUAL STUDIO / VS CODE
+# =========================
+.vs/
+.vscode/
+.idea/
+*.sln.docstates
+
+# =========================
+# 📦 BUILD OUTPUT
+# =========================
+bin/
+obj/
+out/
+publish/
+TestResults/
+*.user
+*.suo
+*.userosscache
+*.userprefs
+*.cache
+*.ilk
+*.pdb
+*.log
+*.vspscc
+*.vssscc
+*.ncb
+*.aps
+*.dbmdl
+*.opendb
+*.VC.db
+*.tlog
+
+# =========================
+# 🔐 SECRETS & ENVIRONMENT
+# =========================
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+secrets.json
+.env
+.env.*
