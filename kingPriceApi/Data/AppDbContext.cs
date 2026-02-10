@@ -21,40 +21,17 @@ namespace kingPriceApi.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 🔹 User <-> Group (many-to-many)
+            // User <-> Group (many-to-many)
             modelBuilder.Entity<User>()
                 .HasMany(u => u.Groups)
                 .WithMany(g => g.Users)
-                .UsingEntity(j => j.ToTable("UserGroups"));
+                .UsingEntity(j => j.ToTable("user_groups"));
 
-            // 🔹 Group <-> Permission (many-to-many)
+            // Group <-> Permission (many-to-many)
             modelBuilder.Entity<Group>()
                 .HasMany(g => g.Permissions)
                 .WithMany(p => p.Groups)
-                .UsingEntity(j => j.ToTable("GroupPermissions"));
-
-            var adminGroupId = Guid.NewGuid();
-            var userGroupId = Guid.NewGuid();
-
-            var readPermissionId = Guid.NewGuid();
-            var writePermissionId = Guid.NewGuid();
-
-            modelBuilder.Entity<Group>().HasData(
-                new Group { Id = adminGroupId, Name = "Admin" },
-                new Group { Id = userGroupId, Name = "User" }
-            );
-
-            modelBuilder.Entity<Permission>().HasData(
-                new Permission { Id = readPermissionId, Name = "Read" },
-                new Permission { Id = writePermissionId, Name = "Write" }
-            );
-
-            modelBuilder.Entity("GroupPermissions").HasData(
-                new { GroupsId = adminGroupId, PermissionsId = readPermissionId },
-                new { GroupsId = adminGroupId, PermissionsId = writePermissionId },
-                new { GroupsId = userGroupId, PermissionsId = readPermissionId }
-            );
-
+                .UsingEntity(j => j.ToTable("group_permissions"));
         }
     }
 }
