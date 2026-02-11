@@ -11,70 +11,127 @@ namespace kingPriceApi.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+        private readonly IGroupRepository _groupRepository;
+        public UserService(IUserRepository userRepository, IGroupRepository groupRepository)
         {
             _userRepository = userRepository;
+            _groupRepository = groupRepository;
         }
 
-        public async Task<UserResponse?> AddUserAsync(UserRequest userDto)
+        public async Task<UserResponse?> AddUserAsync(CreateUserRequest request)
         {
-            var existingUser = await _userRepository.GetByEmailAsync(userDto.Email);
-
+            var existingUser = await _userRepository.GetByEmailAsync(request.Email);
             if (existingUser != null)
-            {
                 return null;
+
+            var groups = new List<Group>();
+
+            if (request.GroupIds.Any())
+            {
+                groups = await _groupRepository.GetByIdsAsync(request.GroupIds);
+
+                if (groups.Count != request.GroupIds.Count)
+                    throw new Exception("One or more groups do not exist.");
             }
 
-            var newUser = new User
+            var user = new User
             {
-                Name = userDto.Name,
-                Sname = userDto.Sname,
-                Email = userDto.Email
+                Id = Guid.NewGuid(),
+                Email = request.Email,
+                Name = request.Name,
+                Sname = request.Sname,
+                Groups = groups
             };
 
-            var user = await _userRepository.AddUserAsync(newUser);
+            var createdUser = await _userRepository.AddUserAsync(user);
 
-            if (user == null)
-            {
-                return null;
-            }
-
-            return new UserResponse
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Sname = user.Sname,
-                Email = user.Email
-            };
+            return MapToResponse(createdUser);
         }
 
-        public async Task<UserResponse> UpdateUserAsync(UserRequest userDto, int id)
+        public async Task<UserResponse?> UpdateUserAsync(UpdateUserRequest request, Guid id)
         {
-            var updateUser = new User
-            {
-                Email = userDto.Email,
-                Name = userDto.Name,
-                Sname = userDto.Sname
-            };
-
-            var user = await _userRepository.UpdateUserAsync(updateUser, id);
+            var user = await _userRepository.GetByIdAsync(id);
 
             if (user == null)
-            {
                 return null;
+
+            // Email uniqueness check (if changed)
+            if (!string.IsNullOrWhiteSpace(request.Email) &&
+                request.Email != user.Email)
+            {
+                var existingUser = await _userRepository.GetByEmailAsync(request.Email);
+                if (existingUser != null)
+                    throw new Exception("Email already exists.");
+                
+                user.Email = request.Email;
             }
 
+            // Partial updates
+            if (!string.IsNullOrWhiteSpace(request.Name))
+                user.Name = request.Name;
+
+            if (!string.IsNullOrWhiteSpace(request.Sname))
+                user.Sname = request.Sname;
+
+            // Update Groups (if provided)
+            if (request.GroupIds != null)
+            {
+                var groups = await _groupRepository.GetByIdsAsync(request.GroupIds);
+
+                if (groups.Count != request.GroupIds.Count)
+                    throw new Exception("One or more groups do not exist.");
+
+                user.Groups = groups;
+            }
+
+            await _userRepository.SaveChangesAsync();
+
+            return MapToResponse(user);
+        }
+
+        public async Task<bool> DeleteUserAsync(Guid id)
+        {
+            return await _userRepository.DeleteUserAsync(id);
+        }
+
+        public async Task<UserResponse?> GetUserByIdAsync(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+                return null;
+
+            return MapToResponse(user);
+        }
+
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return await _userRepository.GetTotalUserCountAsync();
+        }
+
+        public async Task<List<GroupUserCountResponse>> GetUsersPerGroupAsync()
+        {
+            return await _groupRepository.GetUsersPerGroupAsync();
+        }
+
+        private UserResponse MapToResponse(User user)
+        {
             return new UserResponse
             {
                 Id = user.Id,
                 Email = user.Email,
                 Name = user.Name,
-                Sname = user.Sname
+                Sname = user.Sname,
+
+                Groups = user.Groups
+                    .Select(g => g.Name)
+                    .ToList(),
+
+                Permissions = user.Groups
+                    .SelectMany(g => g.GroupPermissions)
+                    .Select(gp => gp.Permission.Name)
+                    .Distinct()
+                    .ToList()
             };
-        }
-        public async Task<bool> DeleteUserAsync(Guid id)
-        {
-            return await _userRepository.DeleteUserAsync(id);
         }
 
     }

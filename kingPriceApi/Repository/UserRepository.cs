@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using kingPriceApi.Data;
 using kingPriceApi.Entities;
 using kingPriceApi.Interfaces;
+using kingPriceApi.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace kingPriceApi.Repository
@@ -25,7 +26,7 @@ namespace kingPriceApi.Repository
             return userDto;
         }
 
-        public async Task<User?> UpdateUserAsync(User userDto, int id)
+        public async Task<User?> UpdateUserAsync(User userDto, Guid id)
         {
             var searchUser = await _context.Users.FindAsync(id);
 
@@ -40,6 +41,11 @@ namespace kingPriceApi.Repository
             await _context.SaveChangesAsync();
 
             return searchUser;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteUserAsync(Guid id)
@@ -61,6 +67,20 @@ namespace kingPriceApi.Repository
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             return user;
+        }
+
+        public async Task<User?> GetByIdAsync(Guid id)
+        {
+            return await _context.Users
+                .Include(u => u.Groups)
+                    .ThenInclude(g => g.GroupPermissions)
+                        .ThenInclude(gp => gp.Permission)
+                .FirstOrDefaultAsync(u => u.Id == id);
+        }
+        
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return await _context.Users.CountAsync();
         }
     }
 }

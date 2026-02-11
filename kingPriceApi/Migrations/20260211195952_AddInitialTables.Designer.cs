@@ -12,7 +12,7 @@ using kingPriceApi.Data;
 namespace kingPriceApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260210182036_AddInitialTables")]
+    [Migration("20260211195952_AddInitialTables")]
     partial class AddInitialTables
     {
         /// <inheritdoc />
@@ -24,21 +24,6 @@ namespace kingPriceApi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("GroupPermission", b =>
-                {
-                    b.Property<Guid>("GroupsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("PermissionsId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("GroupsId", "PermissionsId");
-
-                    b.HasIndex("PermissionsId");
-
-                    b.ToTable("group_permissions", (string)null);
-                });
 
             modelBuilder.Entity("GroupUser", b =>
                 {
@@ -70,6 +55,50 @@ namespace kingPriceApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("groups");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Name = "User"
+                        });
+                });
+
+            modelBuilder.Entity("kingPriceApi.Entities.GroupPermission", b =>
+                {
+                    b.Property<Guid>("GroupsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PermissionsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("GroupsId", "PermissionsId");
+
+                    b.HasIndex("PermissionsId");
+
+                    b.ToTable("group_permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            GroupsId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            PermissionsId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+                        },
+                        new
+                        {
+                            GroupsId = new Guid("11111111-1111-1111-1111-111111111111"),
+                            PermissionsId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+                        },
+                        new
+                        {
+                            GroupsId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            PermissionsId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+                        });
                 });
 
             modelBuilder.Entity("kingPriceApi.Entities.Permission", b =>
@@ -87,6 +116,18 @@ namespace kingPriceApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Name = "Create"
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            Name = "View"
+                        });
                 });
 
             modelBuilder.Entity("kingPriceApi.Entities.User", b =>
@@ -95,6 +136,11 @@ namespace kingPriceApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("email");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -111,21 +157,6 @@ namespace kingPriceApi.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("GroupPermission", b =>
-                {
-                    b.HasOne("kingPriceApi.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("kingPriceApi.Entities.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("GroupUser", b =>
                 {
                     b.HasOne("kingPriceApi.Entities.Group", null)
@@ -139,6 +170,35 @@ namespace kingPriceApi.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("kingPriceApi.Entities.GroupPermission", b =>
+                {
+                    b.HasOne("kingPriceApi.Entities.Group", "Group")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("GroupsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("kingPriceApi.Entities.Permission", "Permission")
+                        .WithMany("GroupPermissions")
+                        .HasForeignKey("PermissionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Permission");
+                });
+
+            modelBuilder.Entity("kingPriceApi.Entities.Group", b =>
+                {
+                    b.Navigation("GroupPermissions");
+                });
+
+            modelBuilder.Entity("kingPriceApi.Entities.Permission", b =>
+                {
+                    b.Navigation("GroupPermissions");
                 });
 #pragma warning restore 612, 618
         }

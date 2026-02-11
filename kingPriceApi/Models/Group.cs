@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace kingPriceApi.Models
 {
-    public class Group
+    public class GroupDTO
     {
         public required string Name { get; set; }
     }

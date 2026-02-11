@@ -9,8 +9,12 @@ namespace kingPriceApi.Interfaces
     public interface IUserRepository
     {
         Task<User> AddUserAsync(User userDto);
-        Task<User?> UpdateUserAsync(User userDto, int id);
+        Task<User?> UpdateUserAsync(User userDto, Guid id);
         Task<bool> DeleteUserAsync(Guid id);
         Task<User?> GetByEmailAsync(string email);
+        Task<User?> GetByIdAsync(Guid id);
+        Task<int> GetTotalUserCountAsync();
+        Task SaveChangesAsync();
+
     }
 }

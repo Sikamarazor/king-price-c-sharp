@@ -10,9 +10,9 @@ namespace kingPriceApi.Entities
     public class Group : BaseEntity
     {
         [Column("name")]
-        public required string Name { get; set; }
+        public string Name { get; set; } = default!;
 
         public ICollection<User> Users { get; set; } = new List<User>();
-        public ICollection<Permission> Permissions { get; set; } = new List<Permission>();
+        public ICollection<GroupPermission> GroupPermissions { get; set; } = new List<GroupPermission>();
     }
 }

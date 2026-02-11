@@ -8,8 +8,11 @@ namespace kingPriceApi.Interfaces
 {
     public interface IUserService
     {
-        Task<UserResponse> AddUserAsync(UserRequest userDto);
-        Task<UserResponse> UpdateUserAsync(UserRequest userDto, int id);
+        Task<UserResponse> AddUserAsync(CreateUserRequest userDto);
+        Task<UserResponse> UpdateUserAsync(UpdateUserRequest userDto, Guid id);
         Task<bool> DeleteUserAsync(Guid id);
+        Task<UserResponse?> GetUserByIdAsync(Guid id);
+        Task<int> GetTotalUserCountAsync();
+        Task<List<GroupUserCountResponse>> GetUsersPerGroupAsync();
     }
 }

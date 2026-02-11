@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace kingPriceApi.Migrations
 {
     /// <inheritdoc />
@@ -40,6 +42,7 @@ namespace kingPriceApi.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
+                    email = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     s_name = table.Column<string>(type: "text", nullable: false)
                 },
@@ -94,6 +97,34 @@ namespace kingPriceApi.Migrations
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "groups",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), "Admin" },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), "User" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "permissions",
+                columns: new[] { "id", "name" },
+                values: new object[,]
+                {
+                    { new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"), "Create" },
+                    { new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"), "View" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "group_permissions",
+                columns: new[] { "GroupsId", "PermissionsId" },
+                values: new object[,]
+                {
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa") },
+                    { new Guid("11111111-1111-1111-1111-111111111111"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") },
+                    { new Guid("22222222-2222-2222-2222-222222222222"), new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb") }
                 });
 
             migrationBuilder.CreateIndex(
