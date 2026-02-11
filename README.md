@@ -49,6 +49,9 @@ dotnet build
 dotnet run
 ```
 
+## Swagger available at
+- http://localhost:5132/swagger
+
 ### Clean the Project
 
 ```bash
