@@ -42,24 +42,40 @@ It manages users, groups, and permissions with **role-based access control (RBAC
 
 ```bash
 dotnet build
+```
 
+### Run the Project
 ```bash
 dotnet run
+```
+
+### Clean the Project
 
 ```bash
 dotnet clean
+```
 
+### Restore the Project
 ```bash
 dotnet restore
+```
 
+### Add a Migration
 ```bash
 dotnet ef migrations add <MigrationName>
+```
 
+### Apply Migrations to the Database
 ```bash
 dotnet ef database update
+```
 
+### Remove Last Migration
 ```bash
 dotnet ef migrations remove
+```
 
+### Run the unit tests
 ```bash
 dotnet test
+```
