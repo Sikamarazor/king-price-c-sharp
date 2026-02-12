@@ -14,5 +14,7 @@ namespace kingPriceApi.Interfaces
         Task<UserResponse?> GetUserByIdAsync(Guid id);
         Task<int> GetTotalUserCountAsync();
         Task<List<GroupUserCountResponse>> GetUsersPerGroupAsync();
+        Task<List<UserResponse>> GetAllUsersAsync();
+
     }
 }

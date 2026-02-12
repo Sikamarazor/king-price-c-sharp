@@ -15,6 +15,7 @@ namespace kingPriceApi.Interfaces
         Task<User?> GetByIdAsync(Guid id);
         Task<int> GetTotalUserCountAsync();
         Task SaveChangesAsync();
+        Task<List<User>> GetAllAsync();
 
     }
 }

@@ -113,6 +113,14 @@ namespace kingPriceApi.Services
             return await _groupRepository.GetUsersPerGroupAsync();
         }
 
+        public async Task<List<UserResponse>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllAsync();
+
+            return users.Select(MapToResponse).ToList();
+        }
+
+
         private UserResponse MapToResponse(User user)
         {
             return new UserResponse

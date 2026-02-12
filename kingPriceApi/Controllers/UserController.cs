@@ -45,6 +45,17 @@ namespace kingPriceApi.Controllers
             return Ok(ApiResponse<UserResponse>.SuccessMessage(result));
         }
 
+        // GET ALL USERS
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var result = await _userService.GetAllUsersAsync();
+
+            return Ok(ApiResponse<List<UserResponse>>
+                .SuccessMessage(result));
+        }
+
+
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
         {

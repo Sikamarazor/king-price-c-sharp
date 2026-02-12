@@ -82,5 +82,15 @@ namespace kingPriceApi.Repository
         {
             return await _context.Users.CountAsync();
         }
+
+        public async Task<List<User>> GetAllAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Groups)
+                    .ThenInclude(g => g.GroupPermissions)
+                        .ThenInclude(gp => gp.Permission)
+                .ToListAsync();
+        }
+
     }
 }
